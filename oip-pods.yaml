@@ -1,0 +1,137 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oip
+  labels:
+    app: oip
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oip-webapp
+spec:
+  containers:
+  - name: angular-webapp
+    image: socialalphaoip/angular-webapp:dev
+    ports:
+      - containerPort: 80
+        protocol: TCP
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oip-auth
+spec:
+  containers:
+  - name: auth-microservice
+    image: socialalphaoip/auth-microservice:dev
+    ports:
+      - containerPort: 3000
+        protocol: TCP
+    env:
+      - name: ENCRYPTION_KEY
+        value: KECbbhlLlqZaoJyqBARhbSwxkCHoTmTh
+      - name: DATABASE_URL
+        value: postgres://postgres:1SocialAlpha@165.22.220.53:3100/postgres
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oip-elasticsearch
+spec:
+  containers:
+  - name: elasticsearch-microservice
+    image: socialalphaoip/elasticsearch-microservice:dev
+    ports:
+      - containerPort: 8080
+        protocol: TCP
+    env:
+      - name: HASURA_GRAPHQL_URL
+        value: https://sa-dev.dev.jaagalabs.com/v1/graphql
+      - name: HASURA_GRAPHQL_ADMIN_SECRET
+        value: 1SocialAlpha
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oip-sms
+spec:
+  containers:
+  - name: sms-microservice
+    image: socialalphaoip/sms-microservice:dev
+    ports:
+      - containerPort: 8080
+        protocol: TCP
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oip-notifications
+spec:
+  containers:
+  - name: notifications-microservice
+    image: socialalphaoip/notifications-microservice:dev
+    ports:
+      - containerPort: 8080
+        protocol: TCP
+    env:
+      - name: HASURA_GRAPHQL_URL
+        value: https://sa-dev.dev.jaagalabs.com/v1/graphql
+      - name: HASURA_GRAPHQL_ADMIN_SECRET
+        value: 1SocialAlpha
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oip-minio
+spec:
+  containers:
+  - name: minio-microservice
+    image: socialalphaoip/minio-microservice:dev
+    ports:
+      - containerPort: 8080
+        protocol: TCP
+    env:
+      - name: MINIO_HTTPS_ENDPOINT
+        value: minio-storage.dev.jaagalabs.com
+      - name: MINIO_ACCESS_KEY
+        value: jaaga
+      - name: MINIO_SECRET_KEY
+        value: 1JaagaLove
+      - name: ENCRYPTION_KEY
+        value: KECbbhlLlqZaoJyqBARhbSwxkCHoTmTh
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oip-user-invite
+spec:
+  containers:
+  - name: user-invite-microservice
+    image: socialalphaoip/user-invite-microservice:dev
+    ports:
+      - containerPort: 8080
+        protocol: TCP
+    env:
+      - name: HASURA_GRAPHQL_URL
+        value: https://sa-dev.dev.jaagalabs.com/v1/graphql
+      - name: HASURA_GRAPHQL_ADMIN_SECRET
+        value: 1SocialAlpha
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oip-hasura
+spec:
+  containers:
+  - name: hasura
+    image: hasura/graphql-engine:v1.0.0
+    env:
+      - name: HASURA_GRAPHQL_DATABASE_URL
+        value: postgres://postgres:1SocialAlpha@165.22.220.53:3100/postgres
+      - name: HASURA_GRAPHQL_ENABLE_CONSOLE
+        value: "true"
+    ports:
+      - containerPort: 8080
+        protocol: TCP
