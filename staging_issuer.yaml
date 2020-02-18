@@ -2,7 +2,7 @@ apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
  name: letsencrypt-staging
- namespace: cert-manager
+#  namespace: cert-manager
 spec:
  acme:
    # The ACME server URL
@@ -17,3 +17,4 @@ spec:
    - http01:
        ingress:
          class:  nginx
+     selector: {} 
